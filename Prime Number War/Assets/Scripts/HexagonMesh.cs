@@ -7,7 +7,9 @@ using TMPro;
 
 public class HexagonMesh : MonoBehaviour
 {
-    public static float sideLength = 0.9f;
+    private static float bigSideLength;
+    public static float sideLengthRatio = 0.9f;
+    private float sideLength;
 
     GameObject textHolder;
 
@@ -15,6 +17,10 @@ public class HexagonMesh : MonoBehaviour
     private Color color;
     private TextMeshPro text;
     private Vector3 location;
+
+    public static Color low = new Color(0.15f, 0.58f, 0.49f);
+    public static Color medium = new Color(0.42f, 0.42f, 0.42f);
+    public static Color high = new Color(0.92f, 0.75f, 0.0f);
 
     // Start is called before the first frame update
     void Start()
@@ -25,10 +31,30 @@ public class HexagonMesh : MonoBehaviour
     {
         number = (int)Random.Range(0, 100);
     }
+    public void SetSideLength(float inputBigSideLength)
+    {
+        bigSideLength = inputBigSideLength;
+        sideLength = sideLengthRatio * bigSideLength;
+    }
     public void SetLocation(float x, float y)
     {
         location = new Vector3(x, y, 0f);
         transform.position = location;
+    }
+    public void SetColor()
+    {
+        if(number < 33)
+        {
+            color = low;
+        }
+        else if(number < 67)
+        {
+            color = medium;
+        }
+        else
+        {
+            color = high;
+        }
     }
 
     public void CreateHexagon()
@@ -57,12 +83,12 @@ public class HexagonMesh : MonoBehaviour
 
         Color[] vertexColors = new Color[]
         {
-            Color.cyan,
-            Color.cyan,
-            Color.cyan,
-            Color.cyan,
-            Color.cyan,
-            Color.cyan
+            color,
+            color,
+            color,
+            color,
+            color,
+            color
         };
 
         Mesh mesh = new Mesh
@@ -91,7 +117,7 @@ public class HexagonMesh : MonoBehaviour
         text.text = number.ToString();
         text.alignment = TextAlignmentOptions.Center;
         text.color = Color.white;
-        text.fontSize = 12;
+        text.fontSize = 6;
     }
 
 
