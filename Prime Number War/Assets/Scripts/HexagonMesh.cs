@@ -1,20 +1,37 @@
-﻿// This code is based on https://medium.com/@hyperparticle/draw-2d-physics-shapes-in-unity3d-2e0ec634381c
+﻿// The mesh code is based on https://medium.com/@hyperparticle/draw-2d-physics-shapes-in-unity3d-2e0ec634381c
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class HexagonMesh : MonoBehaviour
 {
     public static float sideLength = 0.9f;
 
+    GameObject textHolder;
+
+    private int number;
+    private Color color;
+    private TextMeshPro text;
+    private Vector3 location;
+
     // Start is called before the first frame update
     void Start()
     {
-        createHexagon();
     }
 
-    private void createHexagon()
+    public void GenerateRandomNumber()
+    {
+        number = (int)Random.Range(0, 100);
+    }
+    public void SetLocation(float x, float y)
+    {
+        location = new Vector3(x, y, 0f);
+        transform.position = location;
+    }
+
+    public void CreateHexagon()
     {
         float sqrt3 = Mathf.Sqrt(3);
         Vector2[] vertices2D = new Vector2[]
@@ -65,6 +82,18 @@ public class HexagonMesh : MonoBehaviour
         var filter = gameObject.AddComponent<MeshFilter>();
         filter.mesh = mesh;
     }
+
+    public void CreateText()
+    {
+        textHolder = new GameObject();
+        textHolder.transform.position = transform.position;
+        text = textHolder.AddComponent<TextMeshPro>();
+        text.text = number.ToString();
+        text.alignment = TextAlignmentOptions.Center;
+        text.color = Color.white;
+        text.fontSize = 12;
+    }
+
 
     // Update is called once per frame
     void Update()
