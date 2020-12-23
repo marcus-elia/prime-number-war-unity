@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMesh : MonoBehaviour
 {
-    private float shapeRadius = 1f;
+    private float shapeRadius = 0.64f;
 
     private Color color = Color.white;
 
