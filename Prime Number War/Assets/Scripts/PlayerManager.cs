@@ -22,6 +22,7 @@ public class PlayerManager : MonoBehaviour
         player = Instantiate(playerPrefab);
         player.GetComponent<PlayerMesh>().CreateShape();
         player.GetComponent<PlayerMesh>().SetLocation(new Vector3(-5, 0, 0));
+        player.GetComponent<PlayerMesh>().SetTrackRadius(trackRadius);
     }
 
     // Update is called once per frame
