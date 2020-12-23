@@ -107,6 +107,11 @@ public class HexagonMesh : MonoBehaviour
 
         var filter = gameObject.AddComponent<MeshFilter>();
         filter.mesh = mesh;
+
+        PolygonCollider2D collider = gameObject.AddComponent<PolygonCollider2D>();
+        collider.transform.position = transform.position;
+        //collider.radius = 2f;
+        collider.isTrigger = true;
     }
 
     public void CreateText()
@@ -120,6 +125,10 @@ public class HexagonMesh : MonoBehaviour
         text.fontSize = 6;
     }
 
+    public int GetNumber()
+    {
+        return number;
+    }
 
     // Update is called once per frame
     void Update()

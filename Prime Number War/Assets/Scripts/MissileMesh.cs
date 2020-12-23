@@ -66,6 +66,10 @@ public class MissileMesh : MonoBehaviour
 
         var filter = gameObject.AddComponent<MeshFilter>();
         filter.mesh = mesh;
+
+        CircleCollider2D collider = gameObject.AddComponent<CircleCollider2D>();
+        collider.radius = shapeRadius;
+        collider.transform.position = transform.position;
     }
 
     public void SetAngle(float inputAngle)
@@ -88,4 +92,10 @@ public class MissileMesh : MonoBehaviour
     {
         transform.position += velocity;
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log(other.gameObject.GetComponent<HexagonMesh>().GetNumber().ToString());
+    }
+
 }

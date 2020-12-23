@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8099481678421856060}
   - component: {fileID: 7827421557360101038}
+  - component: {fileID: 468205561403153099}
   m_Layer: 0
   m_Name: Missile
   m_TagString: Untagged
@@ -25,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3717024978026444786}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.7438126, y: -0.3603974, z: -234.50516}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -43,3 +44,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e2c331e0ad6c14eb55bfc82600b75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!50 &468205561403153099
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3717024978026444786}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
