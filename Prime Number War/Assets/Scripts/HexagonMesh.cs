@@ -18,6 +18,8 @@ public class HexagonMesh : MonoBehaviour
     private TextMeshPro text;
     private Vector3 location;
 
+    private LinkedList<GameObject> neighbors;
+
     public static Color low = new Color(0.15f, 0.58f, 0.49f);
     public static Color medium = new Color(0.42f, 0.42f, 0.42f);
     public static Color high = new Color(0.92f, 0.75f, 0.0f);
@@ -30,6 +32,10 @@ public class HexagonMesh : MonoBehaviour
     public void GenerateRandomNumber()
     {
         number = (int)Random.Range(0, 100);
+    }
+    public void SetNumber(int n)
+    {
+        number = n;
     }
     public void SetSideLength(float inputBigSideLength)
     {
@@ -128,6 +134,67 @@ public class HexagonMesh : MonoBehaviour
     public int GetNumber()
     {
         return number;
+    }
+
+    public void InitializeNeighbors()
+    {
+        neighbors = new LinkedList<GameObject>();
+    }
+
+    public void AddNeighbor(GameObject obj)
+    {
+        if(!neighbors.Contains(obj))
+        {
+            neighbors.AddFirst(obj);
+        }
+        else
+        {
+            Debug.LogError("This hexagon already has that neighbor.");
+        }
+    }
+
+    public void RemoveNeighbor(GameObject obj)
+    {
+        if(neighbors.Contains(obj))
+        {
+            neighbors.Remove(obj);
+        }
+        else
+        {
+            Debug.LogError("Cannot remove hexagon that is not a neighbor.");
+        }
+    }
+
+    // Adds this number to each of its neighbors
+    public void AddToNeighbors()
+    {
+        for(LinkedListNode<GameObject> it = neighbors.First; it != null; it = it.Next)
+        {
+            it.Value.GetComponent<HexagonMesh>().Add(this.number);
+        }
+    }
+
+    // Removes this node from all of its neighbors
+    public void RemoveFromNeighbors()
+    {
+        for (LinkedListNode<GameObject> it = neighbors.First; it != null; it = it.Next)
+        {
+            it.Value.GetComponent<HexagonMesh>().RemoveNeighbor(this.gameObject);
+        }
+    }
+
+    public void HitByMissile(MissileOwner owner)
+    {
+        this.AddToNeighbors();
+        this.RemoveFromNeighbors();
+        Destroy(gameObject);
+        Destroy(text);
+    }
+
+    public void Add(int n)
+    {
+        number = (number + n) % 100;
+        text.text = number.ToString();
     }
 
     // Update is called once per frame

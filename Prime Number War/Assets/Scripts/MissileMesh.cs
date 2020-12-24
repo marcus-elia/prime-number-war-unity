@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MissileOwner { Player, Computer };
+
 public class MissileMesh : MonoBehaviour
 {
     private float shapeRadius = 0.12f;
@@ -13,6 +15,8 @@ public class MissileMesh : MonoBehaviour
     private Vector3 velocity;
 
     private int smoothness = 24;
+
+    private MissileOwner owner;
 
     // Start is called before the first frame update
     void Start()
@@ -72,6 +76,11 @@ public class MissileMesh : MonoBehaviour
         collider.transform.position = transform.position;
     }
 
+    public void SetOwner(MissileOwner inputOwner)
+    {
+        owner = inputOwner;
+    }
+
     public void SetAngle(float inputAngle)
     {
         angle = inputAngle;
@@ -95,7 +104,8 @@ public class MissileMesh : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log(other.gameObject.GetComponent<HexagonMesh>().GetNumber().ToString());
+        other.gameObject.GetComponent<HexagonMesh>().HitByMissile(this.owner);
+        Destroy(this.gameObject);
     }
 
 }

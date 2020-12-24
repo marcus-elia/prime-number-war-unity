@@ -14,21 +14,22 @@ public class HexagonManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        generateHexagons();
+        GenerateHexagons();
+        CalculateHexagonNeighbors();
     }
 
-    private void generateHexagons()
+    private void GenerateHexagons()
     {
         GameObject h;
         hexagons = new List<GameObject>();
 
         float sqrt3 = Mathf.Sqrt(3);
-        
+
         // Left half and center column
         for(int i = 1; i < boardSize + 1; i++)
         {
             float x = -3 * sideLength / 2 * (boardSize + 1 - i) + 1;
-            float y = -(boardSize + i - 3) * sideLength * sqrt3 / 2 - sideLength * sqrt3;
+            float y = -(boardSize + i - 3) * sideLength * sqrt3 / 2 - sideLength * sqrt3/2;
             for(int j = 1; j < boardSize + i; j++)
             {
                 h = Instantiate(hexagonPrefab);
@@ -38,6 +39,7 @@ public class HexagonManager : MonoBehaviour
                 h.GetComponent<HexagonMesh>().SetColor();
                 h.GetComponent<HexagonMesh>().CreateHexagon();
                 h.GetComponent<HexagonMesh>().CreateText();
+                h.GetComponent<HexagonMesh>().InitializeNeighbors();
 
                 hexagons.Add(h);
 
@@ -49,7 +51,7 @@ public class HexagonManager : MonoBehaviour
         for(int i = 1; i < boardSize; i++)
         {
             float x = 3 * sideLength / 2 * (boardSize - 1 - i) + 1;
-            float y = -(boardSize + i - 3) * sideLength * sqrt3 / 2 - sideLength * sqrt3;
+            float y = -(boardSize + i - 3) * sideLength * sqrt3 / 2 - sideLength * sqrt3/2;
             for(int j = 1; j < boardSize + i; j++)
             {
                 h = Instantiate(hexagonPrefab);
@@ -59,10 +61,31 @@ public class HexagonManager : MonoBehaviour
                 h.GetComponent<HexagonMesh>().SetColor();
                 h.GetComponent<HexagonMesh>().CreateHexagon();
                 h.GetComponent<HexagonMesh>().CreateText();
+                h.GetComponent<HexagonMesh>().InitializeNeighbors();
 
                 hexagons.Add(h);
 
                 y += sideLength * sqrt3;
+            }
+        }
+    }
+
+    private void CalculateHexagonNeighbors()
+    {
+        // If distance between centers of hexagons is less than this, they are neighbors
+        float neighborDistance = sideLength * Mathf.Sqrt(3) + 0.1f;
+
+        for(int i = 0; i < hexagons.Count - 1; i++)
+        {
+            GameObject h1 = hexagons[i];
+            for(int j = i + 1; j < hexagons.Count; j++)
+            {
+                GameObject h2 = hexagons[j];
+                if(Vector3.Distance(h1.transform.position, h2.transform.position) < neighborDistance)
+                {
+                    h1.GetComponent<HexagonMesh>().AddNeighbor(h2);
+                    h2.GetComponent<HexagonMesh>().AddNeighbor(h1);
+                }
             }
         }
     }
