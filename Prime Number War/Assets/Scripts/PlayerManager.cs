@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
 
     public GameObject playerPrefab;
     private GameObject player;
+    public static int playerScore = 0;
 
     public GameObject missilePrefab;
     private GameObject missile;

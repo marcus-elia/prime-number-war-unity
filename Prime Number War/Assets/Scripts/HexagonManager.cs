@@ -6,6 +6,8 @@ public class HexagonManager : MonoBehaviour
 {
     public GameObject hexagonPrefab;
 
+    public GameObject scoreManager;
+
     private List<GameObject> hexagons;
 
     public static float sideLength = 0.5f;
@@ -22,6 +24,8 @@ public class HexagonManager : MonoBehaviour
     {
         GameObject h;
         hexagons = new List<GameObject>();
+
+        HexagonMesh.sm = scoreManager.GetComponent<ScoreManager>();
 
         float sqrt3 = Mathf.Sqrt(3);
 

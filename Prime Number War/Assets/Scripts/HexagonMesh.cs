@@ -14,9 +14,12 @@ public class HexagonMesh : MonoBehaviour
     GameObject textHolder;
 
     private int number;
+    private bool isPrime;
     private Color color;
     private TextMeshPro text;
     private Vector3 location;
+
+    public static ScoreManager sm;
 
     private LinkedList<GameObject> neighbors;
 
@@ -32,10 +35,12 @@ public class HexagonMesh : MonoBehaviour
     public void GenerateRandomNumber()
     {
         number = (int)Random.Range(0, 100);
+        isPrime = IsPrimeUnder100(number);
     }
     public void SetNumber(int n)
     {
         number = n;
+        isPrime = IsPrimeUnder100(number);
     }
     public void SetSideLength(float inputBigSideLength)
     {
@@ -185,7 +190,21 @@ public class HexagonMesh : MonoBehaviour
 
     public void HitByMissile(MissileOwner owner)
     {
-        this.AddToNeighbors();
+        if(isPrime)
+        {
+            if(owner == MissileOwner.Player)
+            {
+                sm.GivePlayerPoints(this.number);
+            }
+            else
+            {
+                sm.GiveComputerPoints(this.number);
+            }
+        }
+        else
+        {
+            this.AddToNeighbors();
+        }
         this.RemoveFromNeighbors();
         Destroy(gameObject);
         Destroy(text);
@@ -194,7 +213,13 @@ public class HexagonMesh : MonoBehaviour
     public void Add(int n)
     {
         number = (number + n) % 100;
+        isPrime = IsPrimeUnder100(number);
         text.text = number.ToString();
+    }
+
+    public static bool IsPrimeUnder100(int n)
+    {
+        return (n == 2 || n == 3  || n == 5 || n == 7) || (n % 2 != 0) && (n % 3 != 0) && (n % 5 != 0) && (n % 7 != 0);
     }
 
     // Update is called once per frame
