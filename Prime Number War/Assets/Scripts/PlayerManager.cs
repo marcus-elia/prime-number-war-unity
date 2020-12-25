@@ -10,10 +10,11 @@ public class PlayerManager : MonoBehaviour
 
     public GameObject playerPrefab;
     private GameObject player;
-    public static int playerScore = 0;
 
     public GameObject missilePrefab;
     private GameObject missile;
+
+    public GameObject hexagonManager;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +39,7 @@ public class PlayerManager : MonoBehaviour
             missile = Instantiate(missilePrefab);
             missile.GetComponent<MissileMesh>().CreateShape();
             missile.GetComponent<MissileMesh>().SetLocation(player.transform.position);
+            missile.GetComponent<MissileMesh>().SetHexagonManager(this.hexagonManager.GetComponent<HexagonManager>());
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             float angle = Mathf.Atan2(worldPosition.y - player.transform.position.y, worldPosition.x - player.transform.position.x);
             missile.GetComponent<MissileMesh>().SetAngle(angle);

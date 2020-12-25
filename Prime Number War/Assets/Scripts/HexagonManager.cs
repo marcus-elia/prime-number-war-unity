@@ -9,6 +9,7 @@ public class HexagonManager : MonoBehaviour
     public GameObject scoreManager;
 
     private List<GameObject> hexagons;
+    public static float trackRadius = 5f;
 
     public static float sideLength = 0.5f;
     public static int boardSize = 5; // There are 2*boardSize - 1 columns
@@ -18,6 +19,7 @@ public class HexagonManager : MonoBehaviour
     {
         GenerateHexagons();
         CalculateHexagonNeighbors();
+        CalculateHexagonShootingAngles();
     }
 
     private void GenerateHexagons()
@@ -39,6 +41,7 @@ public class HexagonManager : MonoBehaviour
                 h = Instantiate(hexagonPrefab);
                 h.GetComponent<HexagonMesh>().GenerateRandomNumber();
                 h.GetComponent<HexagonMesh>().SetSideLength(sideLength);
+                h.GetComponent<HexagonMesh>().SetTrackRadius(trackRadius);
                 h.GetComponent<HexagonMesh>().SetLocation(x, y);
                 h.GetComponent<HexagonMesh>().SetColor();
                 h.GetComponent<HexagonMesh>().CreateHexagon();
@@ -61,6 +64,7 @@ public class HexagonManager : MonoBehaviour
                 h = Instantiate(hexagonPrefab);
                 h.GetComponent<HexagonMesh>().GenerateRandomNumber();
                 h.GetComponent<HexagonMesh>().SetSideLength(sideLength);
+                h.GetComponent<HexagonMesh>().SetTrackRadius(trackRadius);
                 h.GetComponent<HexagonMesh>().SetLocation(x, y);
                 h.GetComponent<HexagonMesh>().SetColor();
                 h.GetComponent<HexagonMesh>().CreateHexagon();
@@ -91,6 +95,27 @@ public class HexagonManager : MonoBehaviour
                     h2.GetComponent<HexagonMesh>().AddNeighbor(h1);
                 }
             }
+        }
+    }
+
+    private void CalculateHexagonShootingAngles()
+    {
+        for(int i = 0; i < hexagons.Count; i++)
+        {
+            hexagons[i].GetComponent<HexagonMesh>().UpdatePositionAngleToShootingAngle();
+        }
+    }
+
+    // To be called by missile when collisions happen
+    public void RemoveHexagon(GameObject obj)
+    {
+        if(hexagons.Contains(obj))
+        {
+            hexagons.Remove(obj);
+        }
+        else
+        {
+            Debug.LogError("Cannot remove this Hexagon.");
         }
     }
 

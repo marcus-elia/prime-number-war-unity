@@ -18,6 +18,8 @@ public class MissileMesh : MonoBehaviour
 
     private MissileOwner owner;
 
+    private HexagonManager hexagonManager;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -81,6 +83,11 @@ public class MissileMesh : MonoBehaviour
         owner = inputOwner;
     }
 
+    public void SetHexagonManager(HexagonManager inputManager)
+    {
+        hexagonManager = inputManager;
+    }
+
     public void SetAngle(float inputAngle)
     {
         angle = inputAngle;
@@ -104,6 +111,7 @@ public class MissileMesh : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        hexagonManager.RemoveHexagon(other.gameObject);
         other.gameObject.GetComponent<HexagonMesh>().HitByMissile(this.owner);
         Destroy(this.gameObject);
     }
