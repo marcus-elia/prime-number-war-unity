@@ -120,6 +120,7 @@ public class MissileMesh : MonoBehaviour
         if(owner == MissileOwner.Computer)
         {
             computerManager.SetMissileIsActive(false);
+            computerManager.SetNeedsToGetNewTarget(true);
         }
         hexagonManager.RemoveHexagon(other.gameObject);
         other.gameObject.GetComponent<HexagonMesh>().HitByMissile(this.owner);

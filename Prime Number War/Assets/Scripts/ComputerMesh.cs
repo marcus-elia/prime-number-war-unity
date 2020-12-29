@@ -10,7 +10,7 @@ public class ComputerMesh : MonoBehaviour
 
     private float trackRadius;
 
-    private float maxAngularSpeed = 0.01f;
+    private float maxAngularSpeed     = 0.05f;
     private float angularAcceleration = 0.001f;
     private float curAngularVelocity = 0f;
     private float curAngle = 0f;
@@ -121,6 +121,7 @@ public class ComputerMesh : MonoBehaviour
             needsToMoveCW = false;
             needsToMoveCCW = false;
             computerManager.SetIsMoving(false);
+            return;
         }        
         // If we are not at the target and need to start moving
         else if(!isMoving && !isAtTarget)

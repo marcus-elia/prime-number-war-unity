@@ -48,7 +48,8 @@ public class ComputerManager : MonoBehaviour
         if(needsToGetNewTarget)
         {
             // Find new target
-            target = hexagonManager.GetBestHexagon();
+            target = hexagonManager.GetBestHexagonDistanceScaled(computer.GetComponent<ComputerMesh>().GetCurAngle());
+            //target = hexagonManager.GetBestHexagonPeriod();
             Vector2 shootingData = target.GetShootingAngle(computer.GetComponent<ComputerMesh>().GetCurAngle());
             moveToAngle = shootingData[0];
             shootAtAngle = shootingData[1];
@@ -62,7 +63,7 @@ public class ComputerManager : MonoBehaviour
             needsToGetNewTarget = false;
             isMoving = true;
         }
-        if(!isMoving && !missileIsActive)
+        if(!isMoving && !missileIsActive && !needsToGetNewTarget)
         {
             FireMissile();
 
@@ -70,13 +71,7 @@ public class ComputerManager : MonoBehaviour
             isMoving = false;
             needsToGetNewTarget = true;
         }
-
-        /*if(!computer.GetComponent<ComputerMesh>().GetNeedsToMove() && !missileIsActive)
-        {
-            FireMissile();
-            missileIsActive = true;
-        }*/
-
+        
         // Check if missile is too far away
         if(missile && Vector2.Distance(missile.transform.position, Vector2.zero) > trackRadius + 1)
         {
@@ -107,5 +102,9 @@ public class ComputerManager : MonoBehaviour
     public void SetIsMoving(bool input)
     {
         isMoving = input;
+    }
+    public void SetNeedsToGetNewTarget(bool input)
+    {
+        needsToGetNewTarget = input;
     }
 }
