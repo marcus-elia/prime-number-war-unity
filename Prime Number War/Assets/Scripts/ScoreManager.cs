@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+public enum GameMode { Alone, VersusComputer };
+
 public class ScoreManager : MonoBehaviour
 {
     public TextMeshProUGUI playerScoreText;
     public TextMeshProUGUI computerScoreText;
 
-    private int playerScore = 0;
-    private int computerScore = 0;
+    public static int playerScore = 0;
+    public static int computerScore = 0;
+
+    public static GameMode gameMode;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        playerScore = 0;
+        computerScore = 0;
     }
 
     // Update is called once per frame

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HexagonManager : MonoBehaviour
 {
@@ -122,6 +123,11 @@ public class HexagonManager : MonoBehaviour
     // Return the hexagon that is best for shooting at in two turns
     public HexagonMesh GetBestHexagonPeriod()
     {
+        if (hexagons.Count == 0)
+        {
+            SceneManager.LoadScene("End2"); // Avoid error, go to end
+        }
+
         int max = -1;
         GameObject best = null;
         for(int i = 0; i < hexagons.Count; i++)
@@ -143,6 +149,11 @@ public class HexagonManager : MonoBehaviour
     // Same, but penalize for being far away
     public HexagonMesh GetBestHexagonDistanceScaled(float currentShooterAngle)
     {
+        if (hexagons.Count == 0)
+        {
+            SceneManager.LoadScene("End2"); // Avoid error, go to end
+        }
+
         float max = -1;
         GameObject best = null;
         for (int i = 0; i < hexagons.Count; i++)
@@ -168,6 +179,16 @@ public class HexagonManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(hexagons.Count == 0)
+        {
+            if(ScoreManager.gameMode == GameMode.Alone)
+            {
+                SceneManager.LoadScene("End1");
+            }
+            else
+            {
+                SceneManager.LoadScene("End2");
+            }
+        }
     }
 }

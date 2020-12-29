@@ -7,11 +7,13 @@ public class MainMenu : MonoBehaviour
 {
     public void Play1()
     {
-        SceneManager.LoadScene("Alone");
+        ScoreManager.gameMode = GameMode.Alone;
+        SceneManager.LoadScene("Single");
     }
 
     public void Play2()
     {
+        ScoreManager.gameMode = GameMode.VersusComputer;
         SceneManager.LoadScene("VersusComputer");
     }
 

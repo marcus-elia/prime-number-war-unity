@@ -48,8 +48,8 @@ public class ComputerManager : MonoBehaviour
         if(needsToGetNewTarget)
         {
             // Find new target
-            target = hexagonManager.GetBestHexagonDistanceScaled(computer.GetComponent<ComputerMesh>().GetCurAngle());
-            //target = hexagonManager.GetBestHexagonPeriod();
+            //target = hexagonManager.GetBestHexagonDistanceScaled(computer.GetComponent<ComputerMesh>().GetCurAngle());
+            target = hexagonManager.GetBestHexagonPeriod();
             Vector2 shootingData = target.GetShootingAngle(computer.GetComponent<ComputerMesh>().GetCurAngle());
             moveToAngle = shootingData[0];
             shootAtAngle = shootingData[1];

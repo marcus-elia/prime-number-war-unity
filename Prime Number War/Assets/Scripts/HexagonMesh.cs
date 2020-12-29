@@ -377,7 +377,7 @@ public class HexagonMesh : MonoBehaviour
 
     public static bool IsPrimeUnder100(int n)
     {
-        return (n == 2 || n == 3  || n == 5 || n == 7) || (n % 2 != 0) && (n % 3 != 0) && (n % 5 != 0) && (n % 7 != 0);
+        return (n == 2 || n == 3  || n == 5 || n == 7) || (n != 1 && (n % 2 != 0) && (n % 3 != 0) && (n % 5 != 0) && (n % 7 != 0));
     }
 
     // Calculate the maximum value from shooting this and then a neighbor
