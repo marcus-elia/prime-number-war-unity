@@ -38,6 +38,8 @@ public class HexagonMesh : MonoBehaviour
     public static Color medium = new Color(0.42f, 0.42f, 0.42f);
     public static Color high = new Color(0.92f, 0.75f, 0.0f);
 
+    public GameObject debugMarker;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -69,38 +71,69 @@ public class HexagonMesh : MonoBehaviour
     }
     public void UpdatePositionAngleToShootingAngle()
     {
+        isVisible = false;
+
         Vector2 rayStart = transform.position;
         positionAngleToShootingAngle = new Dictionary<float, float>();
         if(neighbors[0] == null)
         {
             float angleToMoveTo = GetCircleIntersectionAngle(trackRadius, Mathf.PI/6, rayStart);
-            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI / 6;
+            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI + Mathf.PI / 6;
+            isVisible = true;
         }
         if(neighbors[1] == null)
         {
             float angleToMoveTo = GetCircleIntersectionAngle(trackRadius, Mathf.PI / 2, rayStart);
-            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI / 2;
+            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI + Mathf.PI / 2;
+            isVisible = true;
         }
         if(neighbors[2] == null)
         {
             float angleToMoveTo = GetCircleIntersectionAngle(trackRadius, 5*Mathf.PI/6, rayStart);
-            positionAngleToShootingAngle[angleToMoveTo] = 5*Mathf.PI/6;
+            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI + 5 *Mathf.PI/6;
+            isVisible = true;
         }
         if(neighbors[3] == null)
         {
             float angleToMoveTo = GetCircleIntersectionAngle(trackRadius, 7*Mathf.PI/6, rayStart);
-            positionAngleToShootingAngle[angleToMoveTo] = 7*Mathf.PI/6;
+            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI + 7 *Mathf.PI/6;
+            isVisible = true;
         }
         if(neighbors[4] == null)
         {
             float angleToMoveTo = GetCircleIntersectionAngle(trackRadius, 3*Mathf.PI/2, rayStart);
-            positionAngleToShootingAngle[angleToMoveTo] = 3*Mathf.PI/2;
+            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI + 3 *Mathf.PI/2;
+            isVisible = true;
         }
         if(neighbors[5] == null)
         {
             float angleToMoveTo = GetCircleIntersectionAngle(trackRadius, 11*Mathf.PI/6, rayStart);
-            positionAngleToShootingAngle[angleToMoveTo] = 11*Mathf.PI/6;
+            positionAngleToShootingAngle[angleToMoveTo] = Mathf.PI + 11 *Mathf.PI/6;
+            isVisible = true;
         }
+
+        /*if(isVisible) // =========== Debug
+        {
+            Color[] vertexColors = new Color[]
+            {
+            Color.red,
+            Color.red,
+            Color.red,
+            Color.red,
+            Color.red,
+            Color.red
+            };
+            gameObject.GetComponent<MeshFilter>().mesh.colors = vertexColors;
+
+            foreach (KeyValuePair<float, float> entry in positionAngleToShootingAngle)
+            {
+                GameObject marker = Instantiate(debugMarker);
+                marker.transform.position = new Vector2(transform.position.x + Mathf.Cos(entry.Value) * sideLength, transform.position.y + Mathf.Sin(entry.Value) * sideLength);
+
+                GameObject marker2 = Instantiate(debugMarker);
+                marker2.transform.position = new Vector2(Mathf.Cos(entry.Key) * trackRadius, Mathf.Sin(entry.Key) * trackRadius);
+            }
+        }*/
     }
     public void SetColor()
     {
@@ -171,7 +204,6 @@ public class HexagonMesh : MonoBehaviour
 
         PolygonCollider2D collider = gameObject.AddComponent<PolygonCollider2D>();
         collider.transform.position = transform.position;
-        //collider.radius = 2f;
         collider.isTrigger = true;
     }
 
@@ -190,6 +222,45 @@ public class HexagonMesh : MonoBehaviour
     {
         return number;
     }
+    public bool GetIsVisible()
+    {
+        return isVisible;
+    }
+    // Returns ordered pair (positionAngle, shootingAngle)
+    public Vector2 GetShootingAngle(float currentPositionAngle)
+    {
+        float minDistance = 2 * Mathf.PI;
+        float bestAngle = -1;
+
+        foreach(KeyValuePair<float, float> entry in positionAngleToShootingAngle)
+        {
+            // do something with entry.Value or entry.Key
+            float positionAngle = entry.Key;
+            float angleDifference = positionAngle - currentPositionAngle;
+            float curDistance;
+            if(angleDifference > 0)
+            {
+                curDistance = Mathf.Min(angleDifference, 2 * Mathf.PI - angleDifference);
+            }
+            else
+            {
+                curDistance = Mathf.Min(-angleDifference, 2 * Mathf.PI + angleDifference);
+            }
+
+            if(curDistance < minDistance)
+            {
+                minDistance = curDistance;
+                bestAngle = positionAngle;
+            }
+        }
+
+        if(bestAngle == -1)
+        {
+            return Vector2.zero;
+        }
+
+        return new Vector2(bestAngle, positionAngleToShootingAngle[bestAngle]);
+    }
 
     public void InitializeNeighbors()
     {
@@ -199,6 +270,10 @@ public class HexagonMesh : MonoBehaviour
     public void AddNeighbor(GameObject obj)
     {
         float angle = Mathf.Atan2(obj.transform.position.y - transform.position.y, obj.transform.position.x - transform.position.x);
+        if(angle < 0) // Range of atan2 includes negatives? WHY
+        {
+            angle += 2 * Mathf.PI;
+        }
         if(Mathf.Abs(angle - Mathf.PI/6) < 0.1)
         {
             neighbors[0] = obj;
@@ -225,7 +300,7 @@ public class HexagonMesh : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Invalid angle between a hexagon and its neighbor.");
+            Debug.LogError("Invalid angle between a hexagon and its neighbor: " + angle.ToString());
         }
     }
 
@@ -265,6 +340,9 @@ public class HexagonMesh : MonoBehaviour
                 continue;
             }
             neighbors[i].GetComponent<HexagonMesh>().RemoveNeighbor(this.gameObject);
+
+            // The neighbor should now have a new shooting lane because this is out of the way
+            neighbors[i].GetComponent<HexagonMesh>().UpdatePositionAngleToShootingAngle();
         }
     }
 
@@ -346,13 +424,13 @@ public class HexagonMesh : MonoBehaviour
         {
             x = rayStart.x;
             y = Mathf.Sqrt(r*r - x*x);
-            return Mathf.Atan2(y, x);
+            return MyAtan2(y, x);
         }
         if(missileAngle == 3*Mathf.PI/2)
         {
             x = rayStart.x;
             y = -Mathf.Sqrt(r*r - x*x);
-            return Mathf.Atan2(y, x);
+            return MyAtan2(y, x);
         }
 
         // Otherwise, make a line
@@ -388,12 +466,22 @@ public class HexagonMesh : MonoBehaviour
             y = -Mathf.Sqrt(r*r - x*x);
         }
 
-        return Mathf.Atan2(y, x);
+        return MyAtan2(y, x);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public static float MyAtan2(float y, float x)
+    {
+        float angle = Mathf.Atan2(y, x);
+        if(angle < 0)
+        {
+            angle += 2 * Mathf.PI;
+        }
+        return angle;
     }
 }

@@ -10,7 +10,7 @@ public class ComputerMesh : MonoBehaviour
 
     private float trackRadius;
 
-    private float maxAngularSpeed = 0.05f;
+    private float maxAngularSpeed = 0.01f;
     private float angularAcceleration = 0.001f;
     private float curAngularVelocity = 0f;
     private float curAngle = 0f;
@@ -22,6 +22,8 @@ public class ComputerMesh : MonoBehaviour
     private bool isMoving = false;
     private bool needsToMoveCW = false;
     private bool needsToMoveCCW = false;
+
+    private ComputerManager computerManager;
 
     // Start is called before the first frame update
     void Start()
@@ -76,7 +78,10 @@ public class ComputerMesh : MonoBehaviour
         filter.mesh = mesh;
     }
 
-
+    public void SetComputerManager(ComputerManager input)
+    {
+        computerManager = input;
+    }
     public void SetLocation(Vector3 inputLocation)
     {
         transform.position = inputLocation;
@@ -91,6 +96,7 @@ public class ComputerMesh : MonoBehaviour
         targetAngle = inputAngle;
         isAtTarget = false;
         isMoving = false;
+        // These will be reset in update
         needsToMoveCW = false;
         needsToMoveCCW = false;
     }
@@ -98,30 +104,24 @@ public class ComputerMesh : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Perform Movement
-        curAngle += curAngularVelocity;
-        transform.position = new Vector3(trackRadius * Mathf.Cos(curAngle), trackRadius * Mathf.Sin(curAngle), 0);
-
-        // Keep angle between 0 and 2pi
-        if (curAngle < 0)
-        {
-            curAngle += 2 * Mathf.PI;
-        }
-        else if (curAngle > 2 * Mathf.PI)
-        {
-            curAngle -= 2 * Mathf.PI;
-        }
-
         // Decide if we need to change the movement
 
-        // If we are at the target
-        if(isMoving && Mathf.Abs(targetAngle - curAngle) < 0.01)
+        // If we are one tick away from the target
+        if(isMoving && Mathf.Abs(targetAngle - curAngle) < Mathf.Abs(curAngularVelocity))
         {
+            curAngle = targetAngle;
+            transform.position = new Vector3(trackRadius * Mathf.Cos(curAngle), trackRadius * Mathf.Sin(curAngle), 0);
+        }
+        // If we are at the target
+        if (isMoving && Mathf.Abs(targetAngle - curAngle) < 0.0001)
+        {
+            curAngle = targetAngle;
             isAtTarget = true;
             isMoving = false;
             needsToMoveCW = false;
             needsToMoveCCW = false;
-        }
+            computerManager.SetIsMoving(false);
+        }        
         // If we are not at the target and need to start moving
         else if(!isMoving && !isAtTarget)
         {
@@ -154,6 +154,20 @@ public class ComputerMesh : MonoBehaviour
         {
             curAngularVelocity = -maxAngularSpeed;
         }
+
+        // Perform Movement
+        curAngle += curAngularVelocity;
+        transform.position = new Vector3(trackRadius * Mathf.Cos(curAngle), trackRadius * Mathf.Sin(curAngle), 0);
+
+        // Keep angle between 0 and 2pi
+        if (curAngle < 0)
+        {
+            curAngle += 2 * Mathf.PI;
+        }
+        else if (curAngle > 2 * Mathf.PI)
+        {
+            curAngle -= 2 * Mathf.PI;
+        }
     }
 
     public bool GetNeedsToMove()
@@ -173,5 +187,10 @@ public class ComputerMesh : MonoBehaviour
             float cwDistance = curAngle - targetAngle;
             return (cwDistance < Mathf.PI);
         }
+    }
+
+    public float GetCurAngle()
+    {
+        return curAngle;
     }
 }

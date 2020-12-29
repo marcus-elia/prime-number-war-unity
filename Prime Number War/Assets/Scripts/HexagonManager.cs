@@ -119,6 +119,26 @@ public class HexagonManager : MonoBehaviour
         }
     }
 
+    public HexagonMesh GetBestHexagon()
+    {
+        int max = 0;
+        GameObject best = null;
+        for(int i = 0; i < hexagons.Count; i++)
+        {
+            if(!hexagons[i].GetComponent<HexagonMesh>().GetIsVisible())
+            {
+                continue;
+            }
+            int cur = hexagons[i].GetComponent<HexagonMesh>().MaxTwoShotValue();
+            if (cur > max)
+            {
+                max = cur;
+                best = hexagons[i];
+            }
+        }
+        return best.GetComponent<HexagonMesh>();
+    }
+
     // Update is called once per frame
     void Update()
     {

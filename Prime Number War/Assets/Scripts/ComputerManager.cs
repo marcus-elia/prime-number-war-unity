@@ -18,7 +18,13 @@ public class ComputerManager : MonoBehaviour
     public HexagonManager hexagonManager;
 
     private HexagonMesh target;
-    private bool targetExists;
+    private bool targetExists = false;
+
+    private bool needsToGetNewTarget = true;
+    private bool isMoving = false;
+
+    private float moveToAngle = 0f;
+    private float shootAtAngle = 0f;
 
 
     // Start is called before the first frame update
@@ -30,6 +36,7 @@ public class ComputerManager : MonoBehaviour
     private void GenerateComputer()
     {
         computer = Instantiate(computerPrefab);
+        computer.GetComponent<ComputerMesh>().SetComputerManager(this);
         computer.GetComponent<ComputerMesh>().CreateShape();
         computer.GetComponent<ComputerMesh>().SetLocation(new Vector3(trackRadius, 0, 0));
         computer.GetComponent<ComputerMesh>().SetTrackRadius(trackRadius);
@@ -38,10 +45,44 @@ public class ComputerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!computer.GetComponent<ComputerMesh>().GetNeedsToMove() && !missileIsActive)
+        if(needsToGetNewTarget)
+        {
+            // Find new target
+            target = hexagonManager.GetBestHexagon();
+            Vector2 shootingData = target.GetShootingAngle(computer.GetComponent<ComputerMesh>().GetCurAngle());
+            moveToAngle = shootingData[0];
+            shootAtAngle = shootingData[1];
+
+
+            // Tell ComputerMesh to move there
+            computer.GetComponent<ComputerMesh>().SetTargetAngle(moveToAngle);
+
+            Debug.Log("Moving to angle " + moveToAngle.ToString() + ", shooting at number " + target.GetNumber());
+
+            needsToGetNewTarget = false;
+            isMoving = true;
+        }
+        if(!isMoving && !missileIsActive)
+        {
+            FireMissile();
+
+            missileIsActive = true;
+            isMoving = false;
+            needsToGetNewTarget = true;
+        }
+
+        /*if(!computer.GetComponent<ComputerMesh>().GetNeedsToMove() && !missileIsActive)
         {
             FireMissile();
             missileIsActive = true;
+        }*/
+
+        // Check if missile is too far away
+        if(missile && Vector2.Distance(missile.transform.position, Vector2.zero) > trackRadius + 1)
+        {
+            Destroy(missile);
+            missileIsActive = false;
+            needsToGetNewTarget = true;
         }
     }
 
@@ -49,16 +90,22 @@ public class ComputerManager : MonoBehaviour
     {
         Destroy(missile);
         missile = Instantiate(missilePrefab);
+        missile.GetComponent<MissileMesh>().SetOwner(MissileOwner.Computer);
+        missile.GetComponent<MissileMesh>().SetComputerManager(this);
+        missile.GetComponent<MissileMesh>().SetHexagonManager(this.hexagonManager);
         missile.GetComponent<MissileMesh>().CreateShape();
         missile.GetComponent<MissileMesh>().SetLocation(computer.transform.position);
-        Vector2 worldPosition = Vector2.zero;
-        float angle = Mathf.Atan2(worldPosition.y - computer.transform.position.y, worldPosition.x - computer.transform.position.x);
-        missile.GetComponent<MissileMesh>().SetAngle(angle);
+        missile.GetComponent<MissileMesh>().SetAngle(shootAtAngle);
         missile.GetComponent<MissileMesh>().CalculateVelocity();
     }
 
+    // The missile should call this when it is destroyed
     public void SetMissileIsActive(bool input)
     {
         missileIsActive = input;
+    }
+    public void SetIsMoving(bool input)
+    {
+        isMoving = input;
     }
 }
